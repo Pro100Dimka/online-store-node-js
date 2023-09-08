@@ -1,0 +1,21 @@
+// Ошибка если апишка не сработала
+
+class apiError extends Error {
+  constructor(status, message) {
+    super();
+    this.status = status;
+    this.message = message;
+  }
+  static badRequest(message) {
+    console.log('message', message);
+    return new apiError(404, message);
+  }
+  static internal(message) {
+    return new apiError(500, message);
+  }
+  static forbiden(message) {
+    return new apiError(403, message);
+  }
+}
+
+module.exports = apiError;
