@@ -1,7 +1,5 @@
 // описывание какие поля должны быть в таблицах с какими типами. При єтом происходит создание таблицы
-
 const sequelize = require('../db');
-
 const { DataTypes } = require('sequelize');
 
 const User = sequelize.define('user', {
@@ -32,7 +30,7 @@ const Device = sequelize.define('device', {
   name: { type: DataTypes.STRING, unique: true, allowNull: false },
   price: { type: DataTypes.INTEGER, allowNull: false },
   rating: { type: DataTypes.INTEGER, defaultValue: 0 },
-  img: { type: DataTypes.STRING, allowNull: false },
+  img: { type: DataTypes.BLOB, allowNull: false },
 });
 const Rating = sequelize.define('rating', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
