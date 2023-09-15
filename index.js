@@ -11,9 +11,9 @@ const errorHandler = require('./middleware/errorHandling');
 const path = require('path');
 app.use(cors());
 app.use(express.json());
-// app.get('/', (req, res) => {
-//   res.status(200).json({ message: 'WORKING!!!!' }); // что бы это проверить нужно перейти по адресу  http://localhost:${PORT} делается перед тем как создашь роутеры
-// });
+app.get('/', (req, res) => {
+  res.status(200).json({ message: 'WORKING!!!!' }); // что бы это проверить нужно перейти по адресу  http://localhost:${PORT} делается перед тем как создашь роутеры
+});
 app.use(fileUpload({}));
 app.use(express.static(path.resolve(__dirname, 'static')));
 
