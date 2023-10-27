@@ -1,3 +1,4 @@
+const { Pool } = require('pg');
 const { Device, DeviceInfo } = require('../models/models');
 const path = require('path');
 const uuid = require('uuid'); //рандомные идишники
@@ -10,14 +11,17 @@ class deviceController {
     try {
       let { name, price, brandId, typeId, info } = req.body;
       const { img } = req.files;
-      let fileName = uuid.v4() + '.jpg';
-      img.mv(path.resolve(__dirname, '..', 'static', fileName));
+      const imgData = {
+        type: img?.mimetype,
+        base64String: img?.data?.toString('base64'),
+        name: img?.name,
+      };
       const device = await Device.create({
         name,
-        price,
-        brandId,
-        typeId,
-        img: fileName,
+        price: +price,
+        brandId: +brandId,
+        typeId: +typeId,
+        img: JSON.stringify(imgData),
       });
       if (info) {
         info = JSON.parse(info);
@@ -25,13 +29,13 @@ class deviceController {
           DeviceInfo.create({
             title: el.title,
             description: el.description,
-            deviceId: device.id,
+            deviceId: +device.id,
           });
         });
       }
       return res.json(device);
     } catch (error) {
-      next(apiErrors.badRequest('Елемент з такою назвою вже існує'));
+      next(apiErrors.badRequest(error.message));
     }
   }
   async updateItemById(req, res, next) {
@@ -45,22 +49,14 @@ class deviceController {
       if (!device) {
         return res.status(404).json({ error: 'Device not found' });
       }
-
-      // Если есть новое изображение, перезаписываем его на сервере
       if (img) {
-        const fileName = uuid.v4() + '.jpg';
-        const filePath = path.resolve(__dirname, '..', 'static', device.img);
-
-        // Удаляем старый файл изображения
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        }
-
-        // Записываем новый файл изображения
-        img.mv(path.resolve(__dirname, '..', 'static', fileName));
-        device.img = fileName;
+        const imgData = {
+          type: img.mimetype,
+          base64String: img.data.toString('base64'),
+          name: img.name,
+        };
+        device.img = JSON.stringify(imgData);
       }
-
       // Обновляем остальные свойства устройства
       device.name = name || device.name;
       device.price = price || device.price;
@@ -80,7 +76,6 @@ class deviceController {
           });
         });
       }
-
       return res.json(device);
     } catch (error) {
       next(apiErrors.badRequest(error.message));
@@ -93,7 +88,6 @@ class deviceController {
     let offset = page * limit - limit;
     let devices;
     let order = [];
-    console.log(sortOrder);
     if (sortField && sortOrder) {
       if (
         sortField === 'price' ||
@@ -168,7 +162,7 @@ class deviceController {
       where: { id },
       include: [{ model: DeviceInfo, as: 'info' }],
     });
-
+    console.log('asdasdasdasdasdasd', device.img);
     return res.json(device);
   }
 }

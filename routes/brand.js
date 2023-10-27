@@ -4,7 +4,7 @@ const checkRole = require('../middleware/checkRole');
 const router = new Router();
 
 // запросы на добавление и получения данных
-router.post('/create', checkRole('ADMIN'), brandController.createItem);
+router.post('/', checkRole('ADMIN'), brandController.createItem);
 router.post('/update/:id', checkRole('ADMIN'), brandController.updateItemById);
 router.get('/', brandController.getAllItems);
 router.get('/:id', brandController.getItemById);
